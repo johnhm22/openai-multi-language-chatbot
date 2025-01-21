@@ -1,6 +1,7 @@
 'use client';
 
-import { openaiTranslation } from './lib/openai';
+// import { openaiTranslation } from './lib/openai';
+import { Message, useChat } from 'ai/react';
 import { useState } from 'react';
 import Image from 'next/image';
 
@@ -11,19 +12,29 @@ import parrot from './assets/parrot.png';
 
 export default function Home() {
   const [displayTranslation, setDisplayTranslation] = useState<boolean>(false);
-  const [translation, setTranslation] = useState<string>('');
+  const [translation, setTranslation] = useState<Message[]>([]);
   const [originalText, setOriginalText] = useState<string>('');
 
-  const translate = async (formData: FormData) => {
-    const phrase = formData.get('phrase');
-    setOriginalText(phrase as string);
-    const language = formData.get('language');
-    const response = await openaiTranslation(phrase, language);    
-    if (response) {
-      setDisplayTranslation(true);
-      setTranslation(response);
-    }
-  };
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
+    useChat({
+      api: '/api/chat',
+      // initialMessages: [
+      //   {
+      //     id: Date.now().toString(),
+      //     role: 'system',
+      //     // content: 'You will reply in French',
+      //     content:
+      //   },
+      // ],
+      initialInput:
+        'Provide a translation of the phrase provided by the user. Provide the translation only. Do not add any additional text.',
+    });
+
+  // const response = await openaiTranslation(phrase, language);
+  if (messages) {
+    setDisplayTranslation(true);
+    setTranslation(messages);
+  }
 
   const resetForm = (e) => {
     e.preventDefault();
@@ -46,7 +57,8 @@ export default function Home() {
             </header>
             <form
               className='flex flex-col h-1/2 gap-3 mb-7 mx-3 border-2 border-black rounded-md'
-              action={translate}
+              // action={translate}
+              onSubmit={handleSubmit}
             >
               <div className=' flex flex-col justify-center gap-3'>
                 <label className='text-blue-700 text-xl mt-7 font-semibold flex justify-center'>
@@ -67,14 +79,14 @@ export default function Home() {
                   {displayTranslation ? 'Your translation' : 'Select language'}
                 </h2>
                 {displayTranslation ? (
-                  <textarea
-                    suppressHydrationWarning
-                    cols={33}
-                    rows={4}
-                    defaultValue={translation}
-                    className='bg-slate-200 rounded-md mx-5 p-2'
-                    name='phrase'
-                  />
+                  <div className='bg-slate-200 rounded-md mx-5 p-2'>
+                    {messages.map((m) => (
+                      <div key={m.id}>
+                        {m.role === 'user' ? 'User: ' : 'AI: '}
+                        {m.content}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <span className='pl-16'>
                     <span className='flex flex-row gap-2'>
