@@ -1,101 +1,139 @@
-import Image from "next/image";
+'use client';
+
+import { openaiTranslation } from './lib/openai';
+import { useState } from 'react';
+import Image from 'next/image';
+
+import france from './assets/france.png';
+import spain from './assets/spain.png';
+import japan from './assets/japan.png';
+import parrot from './assets/parrot.png';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [displayTranslation, setDisplayTranslation] = useState<boolean>(false);
+  const [translation, setTranslation] = useState<string>('');
+  const [originalText, setOriginalText] = useState<string>('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const translate = async (formData: FormData) => {
+    const phrase = formData.get('phrase');
+    setOriginalText(phrase as string);
+    const language = formData.get('language');
+    const response = await openaiTranslation(phrase, language);    
+    if (response) {
+      setDisplayTranslation(true);
+      setTranslation(response);
+    }
+  };
+
+  const resetForm = (e) => {
+    e.preventDefault();
+    setDisplayTranslation(false);
+  };
+
+  return (
+    <section className='bg-cyan-300 min-h-screen flex justify-center items-center'>
+      <main className='bg-white rounded-lg w-1/3'>
+        <div className='border border-gray-300 m-3 rounded-lg'>
+          <div className=' font-[family-name:var(--font-geist-sans)]'>
+            <header className='bg-gray-400 mb-3 rounded-t-lg h-32'>
+              <Image
+                src={parrot}
+                height={50}
+                width={50}
+                alt='parrot'
+                className='border border-red-500'
+              />
+            </header>
+            <form
+              className='flex flex-col h-1/2 gap-3 mb-7 mx-3 border-2 border-black rounded-md'
+              action={translate}
+            >
+              <div className=' flex flex-col justify-center gap-3'>
+                <label className='text-blue-700 text-xl mt-7 font-semibold flex justify-center'>
+                  {displayTranslation ? 'Original text' : 'Text to translate'}
+                </label>
+                <textarea
+                  suppressHydrationWarning
+                  cols={33}
+                  rows={4}
+                  // placeholder='input area'
+                  className='bg-slate-200 rounded-md mx-5 p-2'
+                  name='phrase'
+                  defaultValue={originalText}
+                />
+              </div>
+              <div className='flex flex-col gap-1'>
+                <h2 className='text-blue-700 font-semibold text-xl mb-3 flex justify-center'>
+                  {displayTranslation ? 'Your translation' : 'Select language'}
+                </h2>
+                {displayTranslation ? (
+                  <textarea
+                    suppressHydrationWarning
+                    cols={33}
+                    rows={4}
+                    defaultValue={translation}
+                    className='bg-slate-200 rounded-md mx-5 p-2'
+                    name='phrase'
+                  />
+                ) : (
+                  <span className='pl-16'>
+                    <span className='flex flex-row gap-2'>
+                      <input
+                        id='france'
+                        name='language'
+                        type='radio'
+                        value='french'
+                      />
+                      <label htmlFor='france'>French</label>
+                      <Image src={france} alt='FR' height={25} width={25} />
+                    </span>
+                    <span className='flex flex-row gap-2'>
+                      <input
+                        id='spanish'
+                        name='language'
+                        type='radio'
+                        value='spanish'
+                      />
+                      <label htmlFor='spanish'>Spanish</label>
+                      <Image src={spain} alt='SP' height={25} width={25} />
+                    </span>
+
+                    <span className='flex flex-row gap-2'>
+                      <input
+                        type='radio'
+                        name='language'
+                        value='japanese'
+                        id='japan'
+                      />
+                      <label htmlFor='japan'>Japanese</label>
+                      <Image src={japan} alt='JP' height={25} width={25} />
+                    </span>
+                  </span>
+                )}
+              </div>
+              <span className=' mt-4 mb-9 flex justify-center'>
+                {!displayTranslation ? (
+                  <button
+                    suppressHydrationWarning
+                    type='submit'
+                    className='bg-blue-800 text-xl text-white font-semibold w-5/6 py-1 rounded-md'
+                  >
+                    Translate
+                  </button>
+                ) : (
+                  <button
+                    suppressHydrationWarning
+                    onClick={resetForm}
+                    className='bg-blue-800 text-xl text-white font-semibold w-5/6 py-1 rounded-md'
+                  >
+                    Start Over
+                  </button>
+                )}
+              </span>
+            </form>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </section>
   );
 }
