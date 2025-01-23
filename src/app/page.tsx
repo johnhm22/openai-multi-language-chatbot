@@ -12,12 +12,11 @@ export default function Home() {
   type Language = 'French' | 'Spanish' | 'Japanese';
   const [language, setLanguage] = useState<Language | null>();
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-    useChat({
-      body: {
-        language,
-      },
-    });
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    body: {
+      language,
+    },
+  });
 
   return (
     <section className='min-h-screen flex justify-center items-center'>
