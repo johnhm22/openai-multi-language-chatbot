@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model: openai('gpt-4o-mini'),
     system: `You will reply in ${language}`,
-    maxTokens: 500,
+    maxTokens: 100,
     temperature: 1.1,
     messages,
   });
