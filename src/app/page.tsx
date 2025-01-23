@@ -8,8 +8,6 @@ import france from './assets/france.png';
 import spain from './assets/spain.png';
 import japan from './assets/japan.png';
 
-import { cn } from './lib/utils';
-
 export default function Home() {
   type Language = 'French' | 'Spanish' | 'Japanese';
   const [language, setLanguage] = useState<Language | null>();
@@ -75,11 +73,11 @@ export default function Home() {
                     height={35}
                     width={35}
                     alt='French flag'
-                    // className='hover: cursor-pointer'
-                    className={cn(
-                      'hover:cursor-pointer',
-                      language === 'French' && 'shadow-xl',
-                    )}
+                    className={
+                      language === 'French'
+                        ? 'hover:cursor-pointer shadow-xl'
+                        : 'hover:cursor-pointer'
+                    }
                     data-lang='french'
                     onClick={() => setLanguage('French')}
                   />
@@ -88,10 +86,11 @@ export default function Home() {
                     height={35}
                     width={35}
                     alt='Spanish flag'
-                    className={cn(
-                      'hover:cursor-pointer',
-                      language === 'Spanish' && 'shadow-xl',
-                    )}
+                    className={
+                      language === 'Spanish'
+                        ? 'hover:cursor-pointer shadow-xl'
+                        : 'hover:cursor-pointer'
+                    }
                     onClick={() => setLanguage('Spanish')}
                   />
                   <Image
@@ -99,10 +98,11 @@ export default function Home() {
                     height={35}
                     width={35}
                     alt='Japanese flag'
-                    className={cn(
-                      'hover:cursor-pointer',
-                      language === 'Japanese' && 'shadow-xl',
-                    )}
+                    className={
+                      language === 'Japanese'
+                        ? 'hover:cursor-pointer shadow-xl'
+                        : 'hover:cursor-pointer'
+                    }
                     data-lang='japanese'
                     onClick={() => setLanguage('Japanese')}
                   />
