@@ -19,7 +19,7 @@ export default function Home() {
   });
 
   return (
-    <section className='min-h-screen flex justify-center items-center'>
+    <section className='min-h-screen flex justify-center items-center bg-slate-300'>
       <main className='bg-zinc-100 rounded-lg w-1/3'>
         <div className='border border-gray-300 m-3 rounded-lg'>
           <div className=' font-[family-name:var(--font-geist-sans)]'>
